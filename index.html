@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102b46">
+<title>Keuangan Vahn Cell</title>
+<style>
+:root{--navy:#102b46;--blue:#1f5f91;--bg:#f3f6fa;--card:#fff;--ink:#182433;--muted:#718096;--line:#e4eaf1;--green:#13834b;--red:#c43d48;--shadow:0 8px 26px rgba(25,48,75,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--ink)}
+header{background:linear-gradient(120deg,#102b46,#1d527c);color:white;padding:24px max(18px,calc((100% - 1280px)/2));}
+.head{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}h1{font-size:23px;margin:0 0 4px}.sub{color:#d7e5f1;font-size:13px}
+main{max-width:1280px;margin:20px auto;padding:0 18px 40px}
+.toolbar{display:flex;align-items:end;gap:12px;flex-wrap:wrap;background:white;padding:15px;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:16px}
+.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:12px;color:var(--muted);font-weight:650}
+input,button{font:inherit}input[type=date],input[type=text],input[type=number],textarea{border:1px solid #d9e1ea;border-radius:8px;padding:9px 10px;background:#fff;color:var(--ink);min-width:0;width:100%;outline:none}
+input:focus,textarea:focus{border-color:#4c91c7;box-shadow:0 0 0 3px #4c91c71c}
+.dayname{font-weight:750;color:var(--navy);padding:9px 0}
+button{border:0;border-radius:8px;padding:9px 12px;cursor:pointer;font-weight:650}
+.primary{background:var(--blue);color:white}.soft{background:#eaf2f8;color:#1b527d}.danger{background:#fff0f0;color:#b52e39}.lock{background:#fff3d9;color:#855500}
+button:disabled{opacity:.45;cursor:not-allowed}
+.topgrid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);min-width:0}
+.card h2{font-size:16px;margin:0 0 4px;color:var(--navy)}.hint{font-size:12px;color:var(--muted);margin-bottom:13px}
+.entry{display:grid;grid-template-columns:minmax(0,1fr) minmax(105px,.8fr) 34px;gap:7px;align-items:center;margin:8px 0}
+.entry .del{padding:7px 0}.sumline{display:flex;justify-content:space-between;border-top:1px solid var(--line);margin-top:13px;padding-top:12px;font-weight:750}
+.addrow{display:flex;gap:8px;margin-top:12px}.addrow input{flex:1}.addrow button{white-space:nowrap}
+.calcgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.calc{padding:20px}.calc h2{font-size:17px}.big{font-size:clamp(25px,3vw,38px);font-weight:850;letter-spacing:-1px;margin:9px 0;color:var(--navy);overflow-wrap:anywhere}
+.breakdown{font-size:12px;color:var(--muted)}
+.diff{font-size:clamp(25px,3vw,36px);font-weight:850;margin:8px 0}.positive{color:var(--green)}.negative{color:var(--red)}.neutral{color:var(--muted)}
+textarea{min-height:68px;resize:vertical;margin-top:8px}
+.bottom{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.status{font-size:12px;font-weight:750;padding:6px 10px;border-radius:20px;background:#e8f6ee;color:#176b3e}.status.frozen{background:#fff0db;color:#8a5800}
+.note-label{font-size:12px;color:var(--muted);font-weight:650}
+.history{margin-top:16px}.history h2{margin:0 0 10px;font-size:15px}
+.historyrow{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
+.empty{color:var(--muted);font-size:12px;padding:8px 0}
+footer{text-align:center;color:#8793a2;font-size:11px;margin-top:22px}
+@media(max-width:850px){.topgrid{grid-template-columns:1fr 1fr}.topgrid .card:first-child{grid-column:span 2}}
+@media(max-width:560px){main{padding:0 11px 28px}.topgrid,.calcgrid{grid-template-columns:1fr}.topgrid .card:first-child{grid-column:auto}.card{padding:14px}.toolbar{gap:10px}.toolbar .field{flex:1;min-width:130px}.entry{grid-template-columns:minmax(0,1fr) minmax(95px,.8fr) 32px}.addrow input{min-width:0}}
+</style>
+
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<meta name="theme-color" content="#102b46">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vahn Cell">
+</head>
+<body>
+<header><div class="head"><div style="display:flex;align-items:center;gap:12px"><img src="assets/icon-192.png" alt="Logo Vahn Cell" style="width:54px;height:54px;border-radius:13px;object-fit:cover;background:white"><div><h1>Keuangan Vahn Cell</h1><div class="sub">Pembukuan modal harian • sederhana dan tersimpan di perangkat ini</div></div></div><div id="headerDate" class="sub"></div></div></header>
+<main>
+<section class="toolbar">
+ <div class="field"><label for="date">Tanggal pembukuan</label><input type="date" id="date"></div>
+ <div class="field"><label>Hari</label><div class="dayname" id="dayName">—</div></div>
+ <button class="soft" id="prev">← Hari sebelumnya</button><button class="soft" id="next">Hari berikutnya →</button>
+ <div style="flex:1"></div><button class="lock" id="freeze">Bekukan hari ini</button>
+</section>
+<div class="topgrid">
+ <section class="card">
+  <h2>1. Total Hari Ini</h2><div class="hint">Saldo seluruh rekening / sumber dana</div>
+  <div id="todayRows"></div><div class="sumline"><span>Total Hari Ini</span><span id="todayTotal">Rp0</span></div>
+  <div class="addrow"><input id="todayNew" type="text" placeholder="Nama rekening (mis. BRI 3)"><button class="soft" id="addToday">+ Tambah</button></div>
+ </section>
+ <section class="card">
+  <h2>2. Uang Tabungan</h2><div class="hint">Dana yang dipisahkan dari modal usaha</div>
+  <div id="savingRows"></div><div class="sumline"><span>Total Tabungan</span><span id="savingTotal">Rp0</span></div>
+  <div class="addrow"><input id="savingNew" type="text" placeholder="Nama tabungan"><button class="soft" id="addSaving">+ Tambah</button></div>
+ </section>
+ <section class="card">
+  <h2>3. Titipan Terpakai</h2><div class="hint">Uang titipan yang sedang digunakan</div>
+  <div id="depositRows"></div><div class="sumline"><span>Total Titipan</span><span id="depositTotal">Rp0</span></div>
+  <div class="addrow"><input id="depositNew" type="text" placeholder="Nama penitip"><button class="soft" id="addDeposit">+ Tambah</button></div>
+ </section>
+</div>
+<div class="calcgrid">
+ <section class="card calc">
+  <h2>4. Total Modal Bersih</h2><div class="hint">Total Hari Ini − Uang Tabungan − Titipan Terpakai</div>
+  <div class="big" id="netTotal">Rp0</div>
+  <div class="breakdown" id="calculation">Rp0 − Rp0 − Rp0</div>
+ </section>
+ <section class="card calc">
+  <h2>5. Selisih dari Hari Sebelumnya</h2><div class="hint" id="compareLabel">Dibandingkan dengan modal bersih kemarin</div>
+  <div class="diff neutral" id="difference">—</div><div class="breakdown" id="previousValue">Belum ada data hari sebelumnya</div>
+  <div style="margin-top:13px"><label class="note-label" for="reason">Catatan penyebab selisih (mis. pinjaman, keuntungan, pembelian stok)</label><textarea id="reason" placeholder="Tuliskan penyebab perubahan modal..."></textarea></div>
+ </section>
+</div>
+<div class="bottom"><div id="saveStatus" class="status">Tersimpan otomatis</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="soft" id="copyPrev">Salin data kemarin</button><button class="soft" id="exportData">Backup data</button><button class="soft" id="importData">Restore data</button><input id="importFile" type="file" accept="application/json,.json" hidden><button class="primary" id="saveDay">Simpan pembukuan</button></div></div>
+<section class="card history"><h2>Riwayat pembukuan</h2><div class="hint">Ringkasan tanggal yang sudah memiliki catatan. Pilih tanggal di bagian atas untuk melihat atau mengubahnya.</div><div id="historyList"></div></section>
+<footer>Data disimpan di penyimpanan browser pada perangkat ini. Ekspor/cadangkan data secara berkala agar tidak hilang saat data browser dihapus.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const fmt=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0);
+const iso=d=>{const x=new Date(d);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`};
+const parseDate=s=>new Date(s+'T12:00:00');
+const dayLabel=s=>new Intl.DateTimeFormat('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(parseDate(s));
+const today=iso(new Date());
+const defaults={
+ today:[['BRI 1',0],['BRI 2',0],['Mandiri',0],['BCA',0],['BNI 1',0],['BNI 2',0],['BSI',0],['Seabank 1',0],['Seabank 2',0]],
+ saving:[['BCA',0],['BRI',0],['Superbank',0],['Kontrakan',0]],deposit:[]
+};
+let db={};let current=today;let data;let frozen=false;
+try{db=JSON.parse(localStorage.getItem('vahncell_finance_v1')||'{}')||{}}catch(e){db={}}
+function blank(){return {today:structuredClone(defaults.today),saving:structuredClone(defaults.saving),deposit:[],reason:'',frozen:false}}
+function ensure(date){if(!db[date])db[date]=blank();return db[date]}
+function total(rows){return rows.reduce((s,r)=>s+(Number(r[1])||0),0)}
+function totals(d){let a=total(d.today),b=total(d.saving),c=total(d.deposit);return {a,b,c,net:a-b-c}}
+function persist(){localStorage.setItem('vahncell_finance_v1',JSON.stringify(db));$('saveStatus').textContent='Tersimpan otomatis • '+new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});renderHistory()}
+function previousDate(s){let d=parseDate(s);d.setDate(d.getDate()-1);return iso(d)}
+function renderRows(kind,container){let rows=data[kind];let el=$(container);el.innerHTML='';rows.forEach((r,i)=>{
+ let wrap=document.createElement('div');wrap.className='entry';
+ let name=document.createElement('input');name.type='text';name.value=r[0];name.setAttribute('aria-label','Nama '+kind);name.disabled=frozen;
+ name.addEventListener('input',()=>{r[0]=name.value;persist()});
+ let amount=document.createElement('input');amount.type='number';amount.min='0';amount.step='1';amount.inputMode='numeric';amount.placeholder='Nominal';amount.value=r[1]||'';amount.disabled=frozen;amount.setAttribute('aria-label','Nominal '+r[0]);
+ amount.addEventListener('input',()=>{r[1]=Math.max(0,Number(amount.value)||0);updateTotals();persist()});
+ let del=document.createElement('button');del.className='danger del';del.textContent='×';del.title='Hapus baris';del.disabled=frozen;del.onclick=()=>{if(confirm('Hapus catatan ini?')){rows.splice(i,1);render()}};wrap.append(name,amount,del);el.append(wrap);
+ }) }
+function render(){data=ensure(current);frozen=!!data.frozen;$('date').value=current;$('dayName').textContent=dayLabel(current);$('headerDate').textContent=dayLabel(current);$('todayRows');renderRows('today','todayRows');renderRows('saving','savingRows');renderRows('deposit','depositRows');
+ ['todayNew','savingNew','depositNew','reason'].forEach(id=>$(id).disabled=frozen);
+ $('reason').value=data.reason||'';$('freeze').textContent=frozen?'Buka kunci hari ini':'Bekukan hari ini';$('freeze').disabled=false;
+ $('prev').disabled=false;$('next').disabled=current>=today;
+ $('copyPrev').disabled=frozen;$('saveDay').disabled=frozen;
+ updateTotals();renderHistory();
+}
+function updateTotals(){let t=totals(data);$('todayTotal').textContent=fmt(t.a);$('savingTotal').textContent=fmt(t.b);$('depositTotal').textContent=fmt(t.c);$('netTotal').textContent=fmt(t.net);$('calculation').textContent=fmt(t.a)+' − '+fmt(t.b)+' − '+fmt(t.c);
+ let p=db[previousDate(current)];let el=$('difference');el.className='diff neutral';
+ if(p){let diff=t.net-totals(p).net;el.textContent=(diff>0?'+':'')+fmt(diff);el.className='diff '+(diff>0?'positive':diff<0?'negative':'neutral');$('previousValue').textContent='Modal bersih kemarin: '+fmt(totals(p).net);$('compareLabel').textContent='Dibandingkan dengan '+dayLabel(previousDate(current));}
+ else{el.textContent='—';$('previousValue').textContent='Belum ada data pembukuan untuk hari sebelumnya';$('compareLabel').textContent='Dibandingkan dengan hari sebelumnya';}
+}
+function add(kind,input){let v=$(input).value.trim();if(!v)return;data[kind].push([v,0]);$(input).value='';render();persist()}
+function renderHistory(){let el=$('historyList');let keys=Object.keys(db).sort().reverse();el.innerHTML='';if(!keys.length){el.innerHTML='<div class="empty">Belum ada riwayat.</div>';return}keys.slice(0,20).forEach(k=>{let d=db[k],t=totals(d),r=document.createElement('div');r.className='historyrow';let left=document.createElement('span');left.textContent=dayLabel(k)+(d.frozen?' • Terkunci':'');let right=document.createElement('strong');right.textContent=fmt(t.net);r.append(left,right);r.style.cursor='pointer';r.onclick=()=>{current=k;render()};el.append(r)})}
+$('date').max=today;$('date').value=current;$('date').addEventListener('change',e=>{if(e.target.value>today){alert('Tanggal mendatang belum dapat dibukukan.');e.target.value=current;return}current=e.target.value;render()});
+$('prev').onclick=()=>{current=previousDate(current);render()};$('next').onclick=()=>{let d=parseDate(current);d.setDate(d.getDate()+1);let n=iso(d);if(n<=today){current=n;render()}};
+$('addToday').onclick=()=>add('today','todayNew');$('addSaving').onclick=()=>add('saving','savingNew');$('addDeposit').onclick=()=>add('deposit','depositNew');
+$('reason').addEventListener('input',()=>{data.reason=$('reason').value;persist()});
+$('freeze').onclick=()=>{if(!frozen){if(!confirm('Bekukan pembukuan tanggal '+dayLabel(current)+'? Data tidak dapat diedit sampai dibuka kunci.'))return;data.frozen=true}else{if(!confirm('Buka kunci pembukuan tanggal ini agar dapat diedit?'))return;data.frozen=false}persist();render()};
+$('saveDay').onclick=()=>{persist();alert('Pembukuan '+dayLabel(current)+' berhasil disimpan.')};
+$('copyPrev').onclick=()=>{let p=db[previousDate(current)];if(!p){alert('Belum ada data pada hari sebelumnya.');return}if(!confirm('Salin daftar rekening, tabungan, titipan, dan nominal kemarin ke tanggal ini?'))return;data.today=structuredClone(p.today);data.saving=structuredClone(p.saving);data.deposit=structuredClone(p.deposit);data.reason='';render();persist()};
+render();
+
+$('exportData').onclick=()=>{
+ const payload={app:'Keuangan Vahn Cell',version:1,exportedAt:new Date().toISOString(),records:db};
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);const a=document.createElement('a');
+ a.href=url;a.download='backup-keuangan-vahn-cell-'+current+'.json';a.click();URL.revokeObjectURL(url);
+};
+$('importData').onclick=()=>$('importFile').click();
+$('importFile').addEventListener('change',async e=>{
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ try{const parsed=JSON.parse(await file.text());const records=parsed.records||parsed;
+ if(!records||typeof records!=='object'||Array.isArray(records))throw new Error('invalid');
+ if(!confirm('Restore akan mengganti data pembukuan yang ada di perangkat ini. Lanjutkan?'))return;
+ db=records;persist();render();alert('Data berhasil dipulihkan.');
+ }catch(err){alert('File backup tidak valid atau rusak.');}finally{e.target.value='';}
+});
+if('serviceWorker' in navigator && location.protocol!=='file:'){
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+
+</script>
+</body></html>
